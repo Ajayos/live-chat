@@ -1,13 +1,18 @@
 import ACCOUNT from '../sql/account';
 import { Request, Response, NextFunction } from 'express';
 
+interface CustomRequest extends Request {
+	user: any;
+	token: string;
+}
+
 const ACC = new ACCOUNT();
 
 const authenticationMiddleware = async (
-	req: Request,
+	req: CustomRequest,
 	res: Response,
 	next: NextFunction,
-    
+	
 ) => {
 	try {
 		const authToken = req.headers.authorization;
@@ -28,32 +33,18 @@ const authenticationMiddleware = async (
 				data: null,
 			});
 		}
-		const isLogin = await ACC.login_status();
-		if (isLogin) {
-			const decoded = await ACC.decodeToken(token);
-			const deviceFound = await ACC.getDevice(decoded.id);
-			const account = await ACC.me();
-
-			if (deviceFound) {
-				if (account) {
-					next();
-				} else {
-					return res.status(401).json({
-						status: 401,
-						error: true,
-						message: 'Unauthorized',
-						data: null,
-					});
-				}
-			}
-		} else {
+		const user = await ACC.getUser(token);
+		if (!user) {
 			return res.status(401).json({
-				status: 200,
+				status: 401,
 				error: true,
-				message: 'Unauthorized, please create an account',
+				message: 'Unauthorized',
 				data: null,
 			});
 		}
+		req.user = user;
+		req.token = token;
+		next();
 	} catch (err: any) {
 		return {
 			status: 500,

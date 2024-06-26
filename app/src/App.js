@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Login from "./Login";
+import Main from "./Main";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [name, setName] = React.useState("");
+  const [isLogin, setIsLogin] = React.useState(false);
+
+  React.useEffect(() => {
+    const storedName = localStorage.getItem("name");
+    const storedUuid = localStorage.getItem("uuid");
+
+    if (storedName && storedUuid && storedUuid.length > 0 && storedName.length > 0) {
+      setName(storedName);
+      setIsLogin(true);
+    }
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLogin(true);
+  };
+
+  if (isLogin) {
+    return <Main name={name} />;
+  } else
+    return <Login setName={setName} name={name} handleSubmit={handleSubmit} />;
 }
 
 export default App;

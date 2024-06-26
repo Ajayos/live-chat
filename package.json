@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Ajayos/live-chat#readme",
   "dependencies": {
+    "@ajayos/nodedb": "^1.1.0",
     "@ajayos/nodelog": "^1.0.2",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
